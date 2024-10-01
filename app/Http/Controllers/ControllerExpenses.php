@@ -4,16 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Expense;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ControllerExpenses extends Controller
 {
 
-    function index()
+    function index(Request $request)
     {
         $id = Auth::guard('user-api')->user()->id;
-        $data = Expense::where("user_id", $id)->latest('id')->get();
+        $query=Expense::query();
+        $days=$request->input('days');
+        if(!empty($days)){
+          $query->whereBetween('created_at', [Carbon::now()->subDays($days), Carbon::now()]);
+        }
+        $data = $query->where("user_id", $id)->latest('id')->get();
         $data->each(function ($row) {
             $row['image'] = url("uploads/" . $row->image);
         });
@@ -26,7 +32,6 @@ class ControllerExpenses extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            "email" => "required",
             "expenses_name" => "required",
             "date" => "required",
             'currency' => 'required',
@@ -62,6 +67,21 @@ class ControllerExpenses extends Controller
             return response()->json(["status" => false, "message" => "Error" . $e->getMessage()], 500);
         }
 
+
+    }
+
+    function delete($id)
+    {
+        try {
+            $data = Expense::find($id);
+            if (!$data) {
+                return response()->json(["status" => false, "message" => "recored not found"], 404);
+            }
+            $data->delete();
+            return response()->json(["status" => true, "message" => "recored delete successfully"], 200);
+        } catch (\Exception $e) {
+            return response()->json(["status" => false, "message" => "Error" . $e->getMessage()], 500);
+        }
 
     }
 }

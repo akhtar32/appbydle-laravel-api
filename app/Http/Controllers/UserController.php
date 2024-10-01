@@ -29,10 +29,27 @@ class UserController extends Controller
                 'photo' => $request->photo,
             ]
         );
+        $token=$user->createToken('User')->plainTextToken;
+        $user['token']=$token;
+        return response()->json(["status" => true, "message" => "success", "user" => $user], 200);
+    }
+    function guest_login(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'mobile_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        $data = User::updateOrCreate(
+            ['email' => $request->mobile_id],
+        );
+        $user=User::where("email",$request->mobile_id)->first();
 
         $token=$user->createToken('User')->plainTextToken;
         $user['token']=$token;
         return response()->json(["status" => true, "message" => "success", "user" => $user], 200);
-
     }
 }

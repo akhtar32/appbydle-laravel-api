@@ -21,9 +21,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post("user/login", [UserController::class, "login"]);
+Route::post("guest/login",[UserController::class,"guest_login"]);
 
 
 Route::group(["middleware" => "auth:user-api"], function () {
     Route::post('expenses/create', [ControllerExpenses::class, "store"]);
     Route::get("expenses/get", [ControllerExpenses::class, "index"]);
+    Route::get("expenses/delete/{id}", [ControllerExpenses::class, "delete"]);
 });
