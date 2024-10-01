@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
             $table->integer("user_id");
-            $table->string('email');
-            $table->string('image');
-            $table->string('expenses_name');
-            $table->string('date');
-            $table->string('currency');
-            $table->string('total');
-            $table->string('category');
-            $table->text('description');
+            $table->string('email')->nullable();
+            $table->string('image')->nullable();
+            $table->string('expenses_name')->nullable();
+            $table->string('date')->nullable();
+            $table->string('currency')->nullable();
+            $table->string('total')->nullable();
+            $table->string('category')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
